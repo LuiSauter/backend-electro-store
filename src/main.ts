@@ -30,16 +30,16 @@ async function bootstrap() {
   const title: string = configService.get('APP_NAME');
   const url = configService.get('APP_URL');
 
-  if (configService.get('APP_PROD') === 'false') {
-    const config = new DocumentBuilder()
-      .addBearerAuth()
-      .setTitle(title)
-      .setDescription('API Documentation for the application (edit)')
-      .setVersion('1.0')
-      .build();
-    const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('docs', app, document);
-  }
+  // if (configService.get('APP_PROD') === 'false') {
+  const config = new DocumentBuilder()
+    .addBearerAuth()
+    .setTitle(title)
+    .setDescription('API Documentation for the application (edit)')
+    .setVersion('1.0')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('docs', app, document);
+  // }
 
   await app.listen(port);
   console.log(`Application is running on: ${url}`);

@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 
 import { handlerError } from '../common/utils';
 import { ROLES } from 'src/common/constants';
-import { GENDERS } from 'src/common/constants/configuracion';
 import { UserService } from 'src/users/services/users.service';
 import { CreateUserDto } from 'src/users/dto';
 import { ConfigService } from '@nestjs/config';
@@ -21,22 +20,26 @@ export class SeedService {
       return { message: 'No se puede ejecutar seeders en producción' };
     try {
       const user: CreateUserDto = {
-        nombre: 'luis',
-        apellido: 'janco',
+        name: 'luis',
+        last_name: 'janco',
         email: 'luis@gmail.com',
-        password: '123456789',
+        password: '12345678',
         role: ROLES.ADMIN,
-        genero: GENDERS.MASCULINO,
+        country_code: '+591',
+        phone: '78010833',
+        photo_url: 'https://example.com/photo.jpg'
       };
       await this.userService.createUser(user);
 
       const user2: CreateUserDto = {
-        nombre: 'Maria',
-        apellido: 'Romero',
-        email: 'maria@gmail.com',
-        password: '123456789',
-        role: ROLES.BASIC,
-        genero: GENDERS.FEMENINO,
+        name: 'Jaime',
+        last_name: 'Roca',
+        email: 'jr@gmail.com',
+        password: '12345678',
+        country_code: '+591',
+        phone: '71026123',
+        photo_url: 'https://example.com/photo.jpg',
+        role: ROLES.CLIENT,
       };
       await this.userService.createUser(user2);
 

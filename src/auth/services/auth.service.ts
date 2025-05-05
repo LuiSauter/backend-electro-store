@@ -12,8 +12,6 @@ import { CreateUserDto, UpdateUserDto } from 'src/users/dto';
 import { HttpCustomService } from 'src/providers/http/http.service';
 import { userToken, handlerError } from 'src/common/utils';
 import { ROLES } from 'src/common/constants';
-// import { SendMailOptions } from 'src/providers/email/interfaces';
-// import { EmailService } from 'src/providers/email/email.service';
 import { checkTokenGoogleUrl } from 'src/common/constants/configuracion';
 import type { StringValue } from "ms";
 
@@ -38,7 +36,7 @@ export class AuthService {
       if (!user || !(await bcrypt.compare(password, user.password)))
         throw new NotFoundException('Usuario o contraseña incorrectos');
 
-      if (user.isSuspended)
+      if (user.is_suspended)
         throw new NotFoundException('Cuenta suspendida, comunicate con nosotros ' + this.configService.get('APP_URL'))
 
 
@@ -74,7 +72,7 @@ export class AuthService {
     const accessToken = this.signJWT({
       payload, secret: this.configService.get('JWT_AUTH'), expiresIn: '1d'
     });
-    return { accessToken, User: getUser };
+    return { accessToken, user: getUser };
   }
 
   public async recoverPassword(email: string): Promise<any> {
@@ -185,25 +183,27 @@ export class AuthService {
   public async loginWithGoogle(accessToken: string): Promise<any> {
     try {
       const googleUserData = await this.checkTokenGoogle(accessToken);
-      let user;
+      let user: UsersEntity;
       try {
         user = await this.userService.findOneBy({ key: 'email', value: googleUserData.email });
       } catch (error) {
         if (error instanceof NotFoundException) {
           const createUserDto: CreateUserDto = {
-            nombre: googleUserData.given_name,
-            apellido: googleUserData.family_name,
+            name: googleUserData.given_name,
+            last_name: googleUserData.family_name ?? '',
             email: googleUserData.email,
+            photo_url: googleUserData.picture,
             password: '',
-            role: ROLES.BASIC,
-            genero: null,
+            role: ROLES.CLIENT,
+            phone: '',
+            country_code: ''
           };
           user = await this.userService.createUser(createUserDto);
         } else {
           throw error;
         }
       }
-      if (user.esta_suspendido) throw new NotFoundException('Cuenta suspendida, contactate con nosotros')
+      if (user.is_suspended) throw new NotFoundException('Cuenta suspendida, contactate con nosotros')
       return this.generateJWT(user);
     } catch (error) {
       throw new UnauthorizedException(`Error al iniciar sesión con Google: ${error.message}`);

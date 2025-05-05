@@ -1,76 +1,56 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsArray,
   IsEmail,
   IsEnum,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
-  MinLength,
 } from 'class-validator';
 
 import { ROLES } from 'src/common/constants';
-import { GENDERS, NOTIFICACTIONS } from 'src/common/constants/configuracion';
+import { IUser } from '../interfaces/user.interface';
 
-export class CreateUserDto {
-  @ApiProperty({
-    example: 'John Doe',
-    type: String,
-    description: 'Nombre del usuario',
-  })
-  @IsNotEmpty()
+export class CreateUserDto implements Partial<IUser> {
+  @ApiProperty({ description: 'User\'s first name', example: 'John' })
   @IsString()
-  @MinLength(2)
-  nombre: string;
+  @IsNotEmpty()
+  name: string;
 
-  @ApiProperty({
-    example: 'John Doe',
-    type: String,
-    description: 'Apellido del usuario',
-  })
-  @IsNotEmpty()
+  @ApiProperty({ description: 'User\'s last name', example: 'Doe' })
   @IsString()
-  @MinLength(2)
-  apellido: string;
+  @IsNotEmpty()
+  last_name: string;
 
-  @ApiProperty({
-    example: 'john@live.com',
-    type: String,
-    description: 'Correo electrónico del usuario',
-  })
-  @IsNotEmpty()
-  @IsString()
+  @ApiProperty({ description: 'User\'s email address', example: 'john.doe@example.com' })
   @IsEmail()
+  @IsString()
+  @IsNotEmpty()
   email: string;
 
-  @ApiProperty({
-    example: '123456',
-    type: String,
-    description: 'Contraseña del usuario',
-  })
-  @IsNotEmpty()
+  @ApiProperty({ description: 'User\'s password', example: 'securePassword123' })
   @IsString()
-  @MinLength(6)
+  @IsNotEmpty()
   password: string;
 
-  @ApiProperty({
-    example: 'basic',
-    enum: ROLES,
-    description: 'Rol del usuario',
-  })
+
+  @ApiProperty({ description: 'Role assigned to the user', enum: ROLES, example: ROLES.CLIENT })
+  @IsEnum(ROLES)
   @IsNotEmpty()
   @IsString()
-  @IsEnum(ROLES)
   role: ROLES;
 
-  @ApiProperty({
-    example: 'masculino',
-    type: String,
-    description: 'Genero del usuario (Opcional)',
-  })
+  @ApiProperty({ description: 'User\'s phone number', example: '+1234567890' })
   @IsString()
   @IsOptional()
-  @IsEnum(GENDERS)
-  genero: GENDERS;
+  phone: string;
+
+  @ApiProperty({ description: 'URL of the user\'s photo', example: 'https://example.com/photo.jpg' })
+  @IsString()
+  @IsOptional()
+  photo_url: string;
+
+  @ApiProperty({ description: 'Country code of the user', example: 'US' })
+  @IsString()
+  @IsOptional()
+  country_code: string;
 }

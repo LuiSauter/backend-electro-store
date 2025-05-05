@@ -73,7 +73,7 @@ export class UserService {
   public async delete(id: string): Promise<ResponseMessage> {
     try {
       const user = await this.findOne(id);
-      user.isSuspended = true;
+      user.is_suspended = true;
       const deletedUser = await this.userRepository.update(user.id, user);
       if (deletedUser.affected === 0) throw new BadRequestException('Usuario no eliminado.');
       return { statusCode: 200, message: 'Usuario eliminado.' };

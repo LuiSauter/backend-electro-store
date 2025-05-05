@@ -24,8 +24,8 @@ export class AuthGuard implements CanActivate {
       if (managerToken.isExpired)
         throw new UnauthorizedException('Token expirado');
       const user = await this.userService.findOneAuth(managerToken.sub);
-      request.idUser = user.id;
-      request.roleUser = user.role;
+      request.userId = user.id;
+      request.role = user.role;
       return true;
     } catch (error) {
       throw new InternalServerErrorException('Error al validar el token');
