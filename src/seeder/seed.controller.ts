@@ -12,4 +12,9 @@ export class SeedController {
   public async runSeeder(): Promise<any> {
     return await this.seedService.runSeeders();
   }
+
+  @Get('reset-db')
+  public async resetDb(): Promise<any> {
+      return await this.seedService.resetDatabase();
+  }
 }

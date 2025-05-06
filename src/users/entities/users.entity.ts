@@ -24,7 +24,7 @@ export class UsersEntity extends BaseEntity implements IUser {
   @Column()
   password: string;
 
-  @Column({ type: 'varchar', length: 10, nullable: false })
+  @Column({ type: 'varchar', length: 50, nullable: false })
   phone: string;
 
   @Column({ type: 'varchar', length: 10, nullable: false })

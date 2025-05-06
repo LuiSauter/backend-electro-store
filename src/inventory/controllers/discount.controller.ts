@@ -3,23 +3,23 @@ import { ApiBearerAuth, ApiParam, ApiQuery, ApiTags, } from '@nestjs/swagger';
 
 import { AdminAccess } from 'src/auth/decorators';
 import { AuthGuard, RolesGuard } from 'src/auth/guards';
-import { CreateUserDto, UpdateUserDto } from '../dto';
 import { QueryDto } from 'src/common/dto/query.dto';
 import { ResponseMessage } from 'src/common/interfaces/responseMessage.interface';
-import { UserService } from '../services/users.service';
-import { UsersEntity } from '../entities/users.entity';
+import { CreateDiscountDto, UpdateDiscountDto } from '../dto/discount-dto';
+import { DiscountEntity } from '../entities/discount.entity';
+import { DiscountService } from '../services/discount.service';
 
-@ApiTags('Users')
+@ApiTags('Discounts')
 @ApiBearerAuth()
 @UseGuards(AuthGuard, RolesGuard)
-@Controller('user')
-export class UsersController {
+@Controller('discount')
+export class DiscountController {
 
-  constructor(private readonly userService: UserService) { }
+  constructor(private readonly discountService: DiscountService) { }
 
   @Post()
-  public async createUser(@Body() body: CreateUserDto): Promise<UsersEntity> {
-    return await this.userService.createUser(body);
+  public async create(@Body() body: CreateDiscountDto): Promise<DiscountEntity> {
+    return await this.discountService.create(body);
   }
 
   @ApiBearerAuth()
@@ -30,7 +30,7 @@ export class UsersController {
   @ApiQuery({ name: 'value', type: 'string', required: false })
   @Get()
   public async findAll(@Query() queryDto: QueryDto): Promise<ResponseMessage> {
-    return await this.userService.findAll(queryDto);
+    return await this.discountService.findAll(queryDto);
   }
 
   @ApiBearerAuth()
@@ -40,7 +40,7 @@ export class UsersController {
     console.log(id)
     return {
       statusCode: 200,
-      data: await this.userService.findOne(id),
+      data: await this.discountService.findOne(id),
     };
   }
 
@@ -49,11 +49,11 @@ export class UsersController {
   @Patch(':id')
   public async update(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateUserDto: UpdateUserDto,
+    @Body() updateDiscountDto: UpdateDiscountDto,
   ): Promise<ResponseMessage> {
     return {
       statusCode: 200,
-      data: await this.userService.update(id, updateUserDto),
+      data: await this.discountService.update(id, updateDiscountDto),
     };
   }
 
@@ -62,6 +62,6 @@ export class UsersController {
   @ApiBearerAuth()
   @Delete(':id')
   public async delete(@Param('id', ParseUUIDPipe) id: string,): Promise<ResponseMessage> {
-    return await this.userService.delete(id);
+    return await this.discountService.delete(id);
   }
 }

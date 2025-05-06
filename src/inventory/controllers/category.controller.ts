@@ -1,25 +1,24 @@
-import { Body, Controller, Get, Post, Delete, Param, UseGuards, ParseUUIDPipe, Query, Patch, } from '@nestjs/common';
-import { ApiBearerAuth, ApiParam, ApiQuery, ApiTags, } from '@nestjs/swagger';
+import { Body, Controller, Get, Post, Delete, Param, UseGuards, ParseUUIDPipe, Query, Patch } from '@nestjs/common';
+import { ApiBearerAuth, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 import { AdminAccess } from 'src/auth/decorators';
 import { AuthGuard, RolesGuard } from 'src/auth/guards';
-import { CreateUserDto, UpdateUserDto } from '../dto';
 import { QueryDto } from 'src/common/dto/query.dto';
 import { ResponseMessage } from 'src/common/interfaces/responseMessage.interface';
-import { UserService } from '../services/users.service';
-import { UsersEntity } from '../entities/users.entity';
+import { CreateCategoryDto, UpdateCategoryDto } from '../dto/category-dto';
+import { CategoryEntity } from '../entities/category.entity';
+import { CategoryService } from '../services/category.service';
 
-@ApiTags('Users')
+@ApiTags('Categories')
 @ApiBearerAuth()
 @UseGuards(AuthGuard, RolesGuard)
-@Controller('user')
-export class UsersController {
-
-  constructor(private readonly userService: UserService) { }
+@Controller('category')
+export class CategoryController {
+  constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
-  public async createUser(@Body() body: CreateUserDto): Promise<UsersEntity> {
-    return await this.userService.createUser(body);
+  public async create(@Body() body: CreateCategoryDto): Promise<CategoryEntity> {
+    return await this.categoryService.create(body);
   }
 
   @ApiBearerAuth()
@@ -30,17 +29,16 @@ export class UsersController {
   @ApiQuery({ name: 'value', type: 'string', required: false })
   @Get()
   public async findAll(@Query() queryDto: QueryDto): Promise<ResponseMessage> {
-    return await this.userService.findAll(queryDto);
+    return await this.categoryService.findAll(queryDto);
   }
 
   @ApiBearerAuth()
   @ApiParam({ name: 'id', type: 'string' })
   @Get(':id')
   public async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<ResponseMessage> {
-    console.log(id)
     return {
       statusCode: 200,
-      data: await this.userService.findOne(id),
+      data: await this.categoryService.findOne(id),
     };
   }
 
@@ -49,11 +47,11 @@ export class UsersController {
   @Patch(':id')
   public async update(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateUserDto: UpdateUserDto,
+    @Body() updateCategoryDto: UpdateCategoryDto,
   ): Promise<ResponseMessage> {
     return {
       statusCode: 200,
-      data: await this.userService.update(id, updateUserDto),
+      data: await this.categoryService.update(id, updateCategoryDto),
     };
   }
 
@@ -61,7 +59,7 @@ export class UsersController {
   @ApiParam({ name: 'id', type: 'string' })
   @ApiBearerAuth()
   @Delete(':id')
-  public async delete(@Param('id', ParseUUIDPipe) id: string,): Promise<ResponseMessage> {
-    return await this.userService.delete(id);
+  public async delete(@Param('id', ParseUUIDPipe) id: string): Promise<ResponseMessage> {
+    return await this.categoryService.delete(id);
   }
 }

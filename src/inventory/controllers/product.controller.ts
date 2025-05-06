@@ -1,25 +1,31 @@
-import { Body, Controller, Get, Post, Delete, Param, UseGuards, ParseUUIDPipe, Query, Patch, } from '@nestjs/common';
-import { ApiBearerAuth, ApiParam, ApiQuery, ApiTags, } from '@nestjs/swagger';
+import { Body, Controller, Get, Post, Delete, Param, UseGuards, ParseUUIDPipe, Query, Patch, UseInterceptors, UploadedFile, } from '@nestjs/common';
+import { ApiBearerAuth, ApiConsumes, ApiParam, ApiQuery, ApiTags, } from '@nestjs/swagger';
 
 import { AdminAccess } from 'src/auth/decorators';
 import { AuthGuard, RolesGuard } from 'src/auth/guards';
-import { CreateUserDto, UpdateUserDto } from '../dto';
 import { QueryDto } from 'src/common/dto/query.dto';
 import { ResponseMessage } from 'src/common/interfaces/responseMessage.interface';
-import { UserService } from '../services/users.service';
-import { UsersEntity } from '../entities/users.entity';
+import { CreateProductDto, UpdateProductDto } from '../dto/product-dto';
+import { ProductEntity } from '../entities/product.entity';
+import { ProductService } from '../services/product.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 
-@ApiTags('Users')
+@ApiTags('Products')
 @ApiBearerAuth()
 @UseGuards(AuthGuard, RolesGuard)
-@Controller('user')
-export class UsersController {
+@Controller('product')
+export class ProductController {
 
-  constructor(private readonly userService: UserService) { }
+  constructor(private readonly productService: ProductService) { }
 
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('image'))
   @Post()
-  public async createUser(@Body() body: CreateUserDto): Promise<UsersEntity> {
-    return await this.userService.createUser(body);
+  public async createUser(
+    @Body() body: CreateProductDto,
+    @UploadedFile() image: Express.Multer.File,
+  ): Promise<ProductEntity> {
+    return await this.productService.create(body, image);
   }
 
   @ApiBearerAuth()
@@ -30,7 +36,7 @@ export class UsersController {
   @ApiQuery({ name: 'value', type: 'string', required: false })
   @Get()
   public async findAll(@Query() queryDto: QueryDto): Promise<ResponseMessage> {
-    return await this.userService.findAll(queryDto);
+    return await this.productService.findAll(queryDto);
   }
 
   @ApiBearerAuth()
@@ -40,7 +46,7 @@ export class UsersController {
     console.log(id)
     return {
       statusCode: 200,
-      data: await this.userService.findOne(id),
+      data: await this.productService.findOne(id),
     };
   }
 
@@ -49,11 +55,11 @@ export class UsersController {
   @Patch(':id')
   public async update(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateUserDto: UpdateUserDto,
+    @Body() updateUserDto: UpdateProductDto,
   ): Promise<ResponseMessage> {
     return {
       statusCode: 200,
-      data: await this.userService.update(id, updateUserDto),
+      data: await this.productService.update(id, updateUserDto),
     };
   }
 
@@ -62,6 +68,6 @@ export class UsersController {
   @ApiBearerAuth()
   @Delete(':id')
   public async delete(@Param('id', ParseUUIDPipe) id: string,): Promise<ResponseMessage> {
-    return await this.userService.delete(id);
+    return await this.productService.delete(id);
   }
 }

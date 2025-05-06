@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { ProvidersModule } from './providers/providers.module';
 import { CommonModule } from './common/common.module';
 import { SeederModule } from './seeder/seeder.module';
+import { InventoryModule } from './inventory/inventory.module';
 
 @Module({
   imports: [
@@ -17,8 +18,9 @@ import { SeederModule } from './seeder/seeder.module';
     ProvidersModule,
     CommonModule,
 
-    UsersModule,
     AuthModule,
+    UsersModule,
+    InventoryModule,
 
     SeederModule,
   ]

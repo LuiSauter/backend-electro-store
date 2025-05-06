@@ -18,7 +18,7 @@ export class UserService {
     private readonly userRepository: Repository<UsersEntity>,
   ) { }
 
-  public async findAll(queryDto: QueryDto): Promise<UsersEntity[]> {
+  public async findAll(queryDto: QueryDto): Promise<ResponseMessage> {
     try {
       const { limit, offset, order, attr, value } = queryDto;
       const query = this.userRepository.createQueryBuilder('user');
@@ -28,7 +28,11 @@ export class UserService {
         query.orderBy('user.createdAt', order.toLocaleUpperCase() as any);
       if (attr && value)
         query.where(`user.${attr} ILIKE :value`, { value: `%${value}%` });
-      return await query.getMany();
+      return {
+        statusCode: 200,
+        data: await query.getMany(),
+        countData: await query.getCount(),
+      }
     } catch (error) {
       handlerError(error, this.logger);
     }

@@ -26,4 +26,6 @@ export const EnvConfig = () => ({
   MAILER_EMAIL: process.env.MAILER_EMAIL || 'example@gmail.com',
   MAILER_SECRET_KEY: process.env.MAILER_SECRET_KEY || 'mail_password',
   MAILER_PORT: process.env.MAILER_PORT || 587,
+
+  IMGBB_API_KEY: process.env.IMGBB_API_KEY || 'imgbb_api_key',
 });
