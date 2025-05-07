@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Injectable, InternalServerErrorException, Logger, NotFoundException, } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -11,6 +11,7 @@ import { DiscountService } from './discount.service';
 import { CategoryService } from './category.service';
 import axios from 'axios';
 import * as FormData from 'form-data';
+import { LocalStorageService } from 'src/providers/local-storage/local-storage.service';
 
 @Injectable()
 export class ProductService {
@@ -23,6 +24,8 @@ export class ProductService {
     private readonly productRepository: Repository<ProductEntity>,
     private readonly discountService: DiscountService,
     private readonly categoryService: CategoryService,
+    private readonly localStorageService: LocalStorageService,
+    private readonly dataSources: DataSource,
   ) { }
 
   public async findAll(queryDto: QueryDto): Promise<ResponseMessage> {
@@ -49,20 +52,42 @@ export class ProductService {
   public async create(createProductDto: CreateProductDto, img: Express.Multer.File): Promise<ProductEntity> {
     try {
       const { categoryId, image, ...rest } = createProductDto;
+      let pathAux = '';
+      const queryRunner = this.dataSources.createQueryRunner();
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
       // this.logger.log(img);
-      const caregory = await this.categoryService.findOne(categoryId);
+      try {
+        const caregory = await this.categoryService.findOne(categoryId);
 
-      let imageUrl: string | null = null;
-      if (img && img.buffer && img.buffer.length > 0) {
-        imageUrl = await this.uploadImage(img);
+        let imageUrl: string | null = null;
+        let imagePath: string | null = null;
+        if (img && img.buffer && img.buffer.length > 0) {
+          const localStorageResponse = await this.localStorageService.uploadFile({
+            file: img,
+            path: 'products',
+          })
+          imageUrl = localStorageResponse.url;
+          imagePath = localStorageResponse.path;
+          pathAux = localStorageResponse.path;
+        }
+        const product = this.productRepository.create({
+          ...rest,
+          image_url: imageUrl,
+          image_path: imagePath,
+          category: { id: caregory.id }
+        })
+        await queryRunner.manager.save(product);
+        await queryRunner.commitTransaction();
+        // await this.productRepository.save(product);
+        return product;
+      } catch (error) {
+        await queryRunner.rollbackTransaction();
+        if (pathAux) await this.localStorageService.deleteFile({ path: pathAux });
+        throw new InternalServerErrorException(error.message);
+      } finally {
+        await queryRunner.release()
       }
-      const product = this.productRepository.create({
-        ...rest,
-        image_url: imageUrl,
-        category: { id: caregory.id }
-      })
-      await this.productRepository.save(product);
-      return product;
     } catch (error) {
       handlerError(error, this.logger);
     }

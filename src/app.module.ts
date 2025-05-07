@@ -9,6 +9,7 @@ import { ProvidersModule } from './providers/providers.module';
 import { CommonModule } from './common/common.module';
 import { SeederModule } from './seeder/seeder.module';
 import { InventoryModule } from './inventory/inventory.module';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { InventoryModule } from './inventory/inventory.module';
     UsersModule,
     InventoryModule,
 
+    FileModule,
     SeederModule,
   ]
 })
