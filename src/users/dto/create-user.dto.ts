@@ -8,9 +8,8 @@ import {
 } from 'class-validator';
 
 import { ROLES } from 'src/common/constants';
-import { IUser } from '../interfaces/user.interface';
 
-export class CreateUserDto implements Partial<IUser> {
+export class CreateUserDto {
   @ApiProperty({ description: 'User\'s first name', example: 'John' })
   @IsString()
   @IsNotEmpty()
@@ -43,6 +42,10 @@ export class CreateUserDto implements Partial<IUser> {
   @IsString()
   @IsOptional()
   phone: string;
+
+  @ApiProperty({ description: 'nit o ci', example: '999919219' })
+  @IsOptional()
+  nit?: string;
 
   @ApiProperty({ description: 'URL of the user\'s photo', example: 'https://example.com/photo.jpg' })
   @IsString()

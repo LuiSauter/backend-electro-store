@@ -1,9 +1,10 @@
-import { Entity, ManyToOne, OneToMany } from 'typeorm';
-import { Column } from 'typeorm/decorator/columns/Column';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { CategoryEntity } from './category.entity';
 import { DiscountEntity } from './discount.entity';
+import { BuyDetailEntity } from 'src/buy/entities/buy.entity';
+import { SaleDetailEntity } from 'src/sales/entities/sales.entity';
 
 @Entity({ name: 'product' })
 export class ProductEntity extends BaseEntity {
@@ -48,4 +49,16 @@ export class ProductEntity extends BaseEntity {
     nullable: false,
   })
   discounts: DiscountEntity[];
+
+  @OneToMany(() => BuyDetailEntity, (bd) => bd.product, {
+    onDelete: 'CASCADE',
+    nullable: true,
+  })
+  buyDetails: BuyDetailEntity[];
+
+  @OneToMany(() => SaleDetailEntity, (sd) => sd.product, {
+    onDelete: 'CASCADE',
+    nullable: true,
+  })
+  saleDetails: SaleDetailEntity[];
 }

@@ -89,7 +89,8 @@ export class UserService {
   public async findOneBy({ key, value }: { key: keyof CreateUserDto; value: any; }) {
     const user: UsersEntity = await this.userRepository.findOne({ where: { [key]: value } });
     if (!user) {
-      throw new NotFoundException('Usuario no encontrado.');
+      // throw new NotFoundException('Usuario no encontrado.');
+      return null;
     }
     return user;
   }

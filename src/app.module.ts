@@ -10,6 +10,8 @@ import { CommonModule } from './common/common.module';
 import { SeederModule } from './seeder/seeder.module';
 import { InventoryModule } from './inventory/inventory.module';
 import { FileModule } from './file/file.module';
+import { BuyModule } from './buy/buy.module';
+import { SaleModule } from './sales/sales.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { FileModule } from './file/file.module';
     AuthModule,
     UsersModule,
     InventoryModule,
+    BuyModule,
+    SaleModule,
 
     FileModule,
     SeederModule,
