@@ -57,3 +57,21 @@ export class CreateProductDto {
 
 
 export class UpdateProductDto extends PartialType(CreateProductDto) { }
+
+
+export class CreateNotification {
+  @ApiProperty({ description: 'Current stock of the product', example: 50 })
+  @IsNumber()
+  @IsNotEmpty()
+  currentStock: number;
+
+  @ApiProperty({ description: 'Minimum stock required', example: 10 })
+  @IsNumber()
+  @IsNotEmpty()
+  minStock: number;
+
+  @ApiProperty({ description: 'Product ID', example: '123e4567-e89b-12d3-a456-426614174000' })
+  @IsUUID()
+  @IsNotEmpty()
+  productId: string;
+}

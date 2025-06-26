@@ -70,4 +70,19 @@ export class ProductController {
   public async delete(@Param('id', ParseUUIDPipe) id: string,): Promise<ResponseMessage> {
     return await this.productService.delete(id);
   }
+
+  @ApiBearerAuth()
+  @ApiQuery({ name: 'limit', type: 'number', required: false })
+  @ApiQuery({ name: 'offset', type: 'number', required: false })
+  @ApiQuery({ name: 'order', type: 'string', required: false })
+  @ApiQuery({ name: 'attr', type: 'string', required: false })
+  @ApiQuery({ name: 'value', type: 'string', required: false })
+  @Get('notifications')
+  public async findAllNotifications(@Query() queryDto: QueryDto): Promise<ResponseMessage> {
+    return {
+      statusCode: 200,
+      data: await this.productService.getAllNotifications(),
+    }
+  }
+
 }

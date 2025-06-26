@@ -10,17 +10,22 @@ import { CategoryService } from './services/category.service';
 import { DiscountController } from './controllers/discount.controller';
 import { CategoryController } from './controllers/category.controller';
 import { UsersModule } from 'src/users/users.module';
+import { OutputEntity } from './entities/output.entity';
+import { ProductOutputEntity } from './entities/product-output.entity';
+import { OutputService } from './services/output.service';
+import { OutputController } from './controllers/output.controller';
+import { NotificationEntity } from './entities/notification.entity';
 
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      ProductEntity, CategoryEntity, DiscountEntity
+      ProductEntity, CategoryEntity, DiscountEntity, OutputEntity, ProductOutputEntity, NotificationEntity
     ]),
     UsersModule
   ],
-  providers: [ProductService, DiscountService, CategoryService],
-  controllers: [ProductController, DiscountController, CategoryController],
-  exports: [ProductService, TypeOrmModule],
+  providers: [ProductService, DiscountService, CategoryService, OutputService],
+  controllers: [ProductController, DiscountController, CategoryController, OutputController ],
+  exports: [ProductService, TypeOrmModule, DiscountService, CategoryService, OutputService],
 })
 export class InventoryModule { }

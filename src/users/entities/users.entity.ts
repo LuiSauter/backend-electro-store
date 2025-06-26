@@ -7,6 +7,7 @@ import { ROLES } from 'src/common/constants';
 import { IUser } from '../interfaces/user.interface';
 import { BuyEntity } from 'src/buy/entities/buy.entity';
 import { SaleEntity } from 'src/sales/entities/sales.entity';
+import { OutputEntity } from 'src/inventory/entities/output.entity';
 
 @Entity({ name: 'user' })
 export class UsersEntity extends BaseEntity implements IUser {
@@ -49,4 +50,7 @@ export class UsersEntity extends BaseEntity implements IUser {
 
   @OneToMany(() => SaleEntity, sale => sale.customer, { nullable: false, onDelete: 'CASCADE' })
   salesCustomer: SaleEntity[];
+
+  @OneToMany(() => OutputEntity, output => output.user, { nullable: false, onDelete: 'CASCADE' })
+  outputs: OutputEntity[];
 }

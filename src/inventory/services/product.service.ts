@@ -6,12 +6,13 @@ import { QueryDto } from 'src/common/dto/query.dto';
 import { handlerError } from 'src/common/utils';
 import { ResponseMessage } from 'src/common/interfaces/responseMessage.interface';
 import { ProductEntity } from '../entities/product.entity';
-import { CreateProductDto, UpdateProductDto } from '../dto/product-dto';
+import { CreateNotification, CreateProductDto, UpdateProductDto } from '../dto/product-dto';
 import { DiscountService } from './discount.service';
 import { CategoryService } from './category.service';
 import axios from 'axios';
 import * as FormData from 'form-data';
 import { LocalStorageService } from 'src/providers/local-storage/local-storage.service';
+import { NotificationEntity } from '../entities/notification.entity';
 
 @Injectable()
 export class ProductService {
@@ -22,9 +23,12 @@ export class ProductService {
   constructor(
     @InjectRepository(ProductEntity)
     private readonly productRepository: Repository<ProductEntity>,
+    @InjectRepository(NotificationEntity)
+    private readonly notificationRepository: Repository<NotificationEntity>,
     private readonly discountService: DiscountService,
     private readonly categoryService: CategoryService,
     private readonly localStorageService: LocalStorageService,
+
     private readonly dataSources: DataSource,
   ) { }
 
@@ -161,6 +165,33 @@ export class ProductService {
         throw new NotFoundException(`Product with ${key} ${value} not found`);
       }
       return product;
+    } catch (error) {
+      handlerError(error, this.logger);
+    }
+  }
+
+  public async createNotification(params: CreateNotification): Promise<NotificationEntity> {
+    try {
+      this.logger.log(params);
+      const { currentStock, minStock, productId } = params
+      const notification = this.notificationRepository.create({
+        currentStock,
+        minStock,
+        product: { id: productId },
+      });
+      await this.notificationRepository.save(notification);
+      return notification;
+    } catch (error) {
+      handlerError(error, this.logger);
+    }
+  }
+
+  // get all notifications
+  public async getAllNotifications(): Promise<NotificationEntity[]> {
+    try {
+      return await this.notificationRepository.find({
+        relations: ['product'],
+      });
     } catch (error) {
       handlerError(error, this.logger);
     }

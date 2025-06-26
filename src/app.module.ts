@@ -12,12 +12,14 @@ import { InventoryModule } from './inventory/inventory.module';
 import { FileModule } from './file/file.module';
 import { BuyModule } from './buy/buy.module';
 import { SaleModule } from './sales/sales.module';
+import { GatewayModule } from './websocket/websocket.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
     TypeOrmModule.forRoot({ ...DataSourceConfig }),
 
+    GatewayModule,
     ProvidersModule,
     CommonModule,
 

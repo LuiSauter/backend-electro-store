@@ -9,6 +9,7 @@ import { CreateSaleDto } from "../dto/sales.dto";
 import { getDate, handlerError } from "src/common/utils";
 import { ROLES } from "src/common/constants";
 import { ResponseGet } from "src/common/interfaces/responseMessage.interface";
+import { WebsocketGateway } from "src/websocket/websocket.gateway";
 
 @Injectable()
 export class SaleNoteService {
@@ -20,7 +21,8 @@ export class SaleNoteService {
     @InjectRepository(SaleDetailEntity) private readonly saleDetailRepository: Repository<SaleDetailEntity>,
     private readonly userService: UserService,
     private readonly productService: ProductService,
-    private readonly dataSources: DataSource
+    private readonly dataSources: DataSource,
+    private readonly webSocketGateway: WebsocketGateway,
   ) { }
 
   public async create(createSaleDto: CreateSaleDto, userId: string): Promise<SaleEntity> {
@@ -82,6 +84,24 @@ export class SaleNoteService {
           await queryRunner.manager.save(saleDetail);
         });
         await Promise.all(promises);
+        // verificar si el stock del producto llego al minimo
+        const products = details.map(detail => detail.productId);
+        products.forEach(async productId => {
+          const product = await this.productService.findOne(productId);
+          if (product.stock <= product.minimum_stock) {
+            this.productService.createNotification({
+              currentStock: product.stock,
+              minStock: product.minimum_stock,
+              productId: product.id
+            })
+            this.webSocketGateway.handleMinimunStock({
+              product: product,
+              title: 'Stock mínimo alcanzado',
+              body: `El producto ${product.name} ha llegado al stock mínimo de ${product.minimum_stock}.`,
+              type: 'minimun_stock',
+            });
+          }
+        });
         await queryRunner.commitTransaction();
         return saleNoteSaved;
       } catch (error) {

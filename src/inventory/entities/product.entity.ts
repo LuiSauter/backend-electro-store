@@ -5,6 +5,8 @@ import { CategoryEntity } from './category.entity';
 import { DiscountEntity } from './discount.entity';
 import { BuyDetailEntity } from 'src/buy/entities/buy.entity';
 import { SaleDetailEntity } from 'src/sales/entities/sales.entity';
+import { ProductOutputEntity } from './product-output.entity';
+import { NotificationEntity } from './notification.entity';
 
 @Entity({ name: 'product' })
 export class ProductEntity extends BaseEntity {
@@ -61,4 +63,16 @@ export class ProductEntity extends BaseEntity {
     nullable: true,
   })
   saleDetails: SaleDetailEntity[];
+
+  @OneToMany(() => ProductOutputEntity, (productOutput) => productOutput.product, {
+    onDelete: 'CASCADE',
+    nullable: true,
+  })
+  productOutput: ProductOutputEntity[];
+
+  @OneToMany(() => NotificationEntity, (notification) => notification.product, {
+    onDelete: 'CASCADE',
+    nullable: true,
+  })
+  notifications: NotificationEntity[];
 }

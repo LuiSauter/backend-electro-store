@@ -25,6 +25,9 @@ export class SaleEntity extends BaseEntity {
   @Column({ type: 'varchar', nullable: false })
   time: string;
 
+  @Column({ type: 'varchar', nullable: true })
+  paymentMethod: string;
+
   @Column({ type: 'float', nullable: true, default: 0 })
   discount: number;
 

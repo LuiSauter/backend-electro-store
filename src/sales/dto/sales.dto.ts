@@ -54,6 +54,14 @@ export class CreateSaleDto {
   @IsString()
   time: string;
 
+  @ApiProperty({
+    example: 'paymentMethod',
+    type: String,
+    description: 'Método de pago utilizado',
+    required: false
+  })
+  paymentMethod: string
+
   @ApiProperty({ example: 0, type: Number, required: false, description: 'Descuento' })
   @IsOptional()
   @IsNumber()
